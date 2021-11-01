@@ -1,10 +1,10 @@
-### Author: Flavian Tschurr
-### Edited: Jonas Anderegg, 2021-11-01
-### Project: Herbifly
-### Script use: wrapper script to analyse frames (as geojson) from an orthomosaic on single images
-### This wrapper uses the output masks of the HF_segmentation_main!! It is not a standalone script, no segmentation and
-### classification is applied to reduce comnputing time and bias from different segmentation results
-### Date: 17.06.2020
+# Author: Flavian Tschurr
+# Edited: Jonas Anderegg, 2021-11-01
+# Project: Herbifly
+# Script use: wrapper script to analyse frames (as geojson) from an orthomosaic on single images
+# This wrapper uses the output masks of the HF_segmentation_main!! It is not a standalone script, no segmentation and
+# classification is applied to reduce comnputing time and bias from different segmentation results
+# Date: 17.06.2020
 
 ########################################################################################################################
 # imports
@@ -31,8 +31,9 @@ import plant_indices as plant_indices
 
 ########################################################################################################################
 
+# set variables
 farmers = ["Baumberger1", "Baumberger2", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny", "Miauton"]
-agisoft_path= "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
+agisoft_path = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
 workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
 picture_type = "30m"
 picture_format = "JPG"
@@ -78,7 +79,7 @@ for farmer in farmers:
                 path_RGB_date = os.path.join(workdir, farmer_region, farmer, picture_type, date)
                 cornersDF = pd.io.parsers.read_csv("{path_grid_c}/{farm}_{dat}_{picture_t}_CameraCornerCoordinates.csv".format(
                     path_grid_c=path_grid_corners, farm=farmer, dat=date, picture_t=picture_type), index_col=0)
-                path_geojsons_date = os.path.join(path_geojsons_folder,date)
+                path_geojsons_date = os.path.join(path_geojsons_folder, date)
                 path_current_masks = os.path.join(base_output_folder_farmer, 'mask', date)
                 path_output_frame_csv = os.path.join(base_output_folder_farmer, "frames", date)
                 Path(path_output_frame_csv).mkdir(parents=True, exist_ok=True)
@@ -113,7 +114,6 @@ for farmer in farmers:
                                 # --> as the are polygons and not rectangles too many images will be found
                                 # --> check afterwards for that
                                 images = FrameFunctions.image_finder(cornersDF, coords)
-                                # images = images[36:37]
                                 for image in images:
                                     img_id = image[0]
                                     print(img_id)
@@ -134,7 +134,6 @@ for farmer in farmers:
                                             break
                                             out = [-999, -999]
                                             print("NoneType detected!")
-                                        # out = [int(out[0]), int(out[1])]
                                         coords_pic.append(out)
 
                                     if len(coords_pic) > 0:
@@ -150,9 +149,9 @@ for farmer in farmers:
 
                                     if AgisoftFunctions.pic_coordinate_checker(coords_pic, sens):
 
-                                        image_name = "{img}.{pic_form}".format(img=image[0],pic_form=picture_format)
+                                        image_name = "{img}.{pic_form}".format(img=image[0], pic_form=picture_format)
                                         print(image_name)
-                                        path_RGB_image = os.path.join(path_RGB_date,image_name)
+                                        path_RGB_image = os.path.join(path_RGB_date, image_name)
                                         RGB_pic = mpimg.imread(str(path_RGB_image))
                                         index_pic = index_function(RGB_pic)
                                         frame_cov = FrameFunctions.polygon_value_calculator(corner_grid_pic=coords_pic,
