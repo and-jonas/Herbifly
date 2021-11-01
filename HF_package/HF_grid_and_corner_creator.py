@@ -25,7 +25,7 @@ import AgisoftFunctions as AgisoftFunctions
 workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
 workdir_out = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
 picture_type = "30m"
-gridSize = 1
+gridSize = 0.5
 pic_format = ".JPG"
 farmers = ["Baumberger2", "Baumberger1", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny","Miauton"]
 images = "full_size"  # "full_size" or "tile"
