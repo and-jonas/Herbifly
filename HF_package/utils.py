@@ -4,7 +4,7 @@
 # Project: Herbifly
 # Script use: provides various utility functions for the HF_package
 # Date: 06.05.2020
-# Last modified 20201222
+# Last edited: Jonas Anderegg,  2021-11-01
 # ======================================================================================================================
 
 # imports
