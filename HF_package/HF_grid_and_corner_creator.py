@@ -1,6 +1,7 @@
-### Author: Flavian Tschurr
-### Project: Herbifly
-### Date: 05.05.2020
+# Author: Flavian Tschurr
+# Project: Herbifly
+# Date: 05.05.2020
+# Last edited: Jonas Anderegg, 2021-11-01
 
 ########################################################################################################################
 # imports

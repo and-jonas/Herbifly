@@ -1,10 +1,10 @@
 # Author: Flavian Tschurr
-# Edited: Jonas Anderegg, 2021-11-01
 # Project: Herbifly
 # Script use: wrapper script to analyse frames (as geojson) from an orthomosaic on single images
 # This wrapper uses the output masks of the HF_segmentation_main!! It is not a standalone script, no segmentation and
 # classification is applied to reduce comnputing time and bias from different segmentation results
 # Date: 17.06.2020
+# Last edited: Jonas Anderegg, 2021-11-01
 
 ########################################################################################################################
 # imports
