@@ -87,7 +87,7 @@ def round_down_to_even(f):
 
 def get_farmer_region(farmer):
     if farmer == "Baumberger2" or farmer == "Baumberger1" or farmer == "Stettler":
-        farmer_region ="Bern_Solothurn"
+        farmer_region = "Bern_Solothurn"
     elif farmer == "Egli" or farmer == "Keller" or farmer == "Bolli":
         farmer_region = "Nordostschweiz"
     elif farmer == "Scheidegger" or farmer == "Miauton" or farmer == "Bonny":

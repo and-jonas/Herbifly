@@ -13,7 +13,7 @@ import pandas as pd
 import math
 import numpy as np
 from matplotlib import path
-import utils as utils
+import HF_package.utils as utils
 
 
 def get_corner_coordinates(chunk):
