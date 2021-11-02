@@ -1,10 +1,10 @@
 # ======================================================================================================================
-# Author: Flavian Tschurr, Jonas Anderegg
+# Author: Jonas Anderegg, Flavian Tschurr
 # Project: Herbifly
 # Script use: HF segmentation of single images by classification, segmentation, referencing to world coordiantes etc.
 # Date: 05.05.2020
 # Random Forest etc. from Lukas Roth --> https://gitlab.ethz.ch/crop_phenotyping/crop_phenotyping_course
-# Last modified: 20201221
+# Last modified: 2021-11-02
 # ======================================================================================================================
 
 # imports
@@ -45,7 +45,8 @@ import HF_package.LcClfUtils as LcClfUtils
 # create a class
 # ======================================================================================================================
 
-class SegmentationCalculator():
+class SegmentationCalculator:
+
     def __init__(self, workdir, picture_type, picture_roi, pic_format, features, farmers, gridSize, agisoft_path):
         self.workdir = workdir
         self.picture_type = picture_type
@@ -305,7 +306,7 @@ class SegmentationCalculator():
             path_current_j=path_current_prediction,
             pic_n=pic_name
         )
-        path_predicted_mask = "{path_current_j}/{pic_n}_predicted_mask_TEMP.tif".format(
+        path_predicted_mask = "{path_current_j}/{pic_n}_predicted_mask.tif".format(
             path_current_j=path_current_prediction,
             pic_n=pic_name
         )
@@ -525,13 +526,16 @@ class SegmentationCalculator():
 
                             path_current_image = os.path.join(path_myDate, image)
                             gridIndicator = self.gridSize * 100
-                            path_output_csv = Path(os.path.join(f'{path_output_date_csv}/{pic_name}_coverage_{gridIndicator}.csv'))
+                            # path_output_csv = Path(
+                            #     os.path.join(f'{path_output_date_csv}/{pic_name}_coverage_{gridIndicator}.csv'))
+                            path_output_csv = Path(
+                                os.path.join(f'{path_output_date_csv}/{pic_name}_coverage.csv'))
                             if not path_output_csv.exists():
                                 if self.picture_type == "Handheld":
                                     # Path(path_current_json).mkdir(parents=True, exist_ok=True)
-                                    output = self.process_handheld_mask(path_current_image,
-                                                                        pic_name, path_current_json, mask_clf,
-                                                                        path_output_date_csv)
+                                    self.process_handheld_mask(path_current_image,
+                                                               pic_name, path_current_json, mask_clf,
+                                                               path_output_date_csv)
 
                                 elif self.picture_type == "10m" or "30m" or "50m":
                                     csv_names.append(self.process_drone_mask(chunk, cornersDF, mask_clf,
