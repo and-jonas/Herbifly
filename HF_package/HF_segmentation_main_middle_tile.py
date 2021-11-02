@@ -58,6 +58,10 @@ class SegmentationCalculator:
         self.agisoft_path = agisoft_path
 
     def get_rowdet_foldername(self):
+        """
+        Get names of the row mask and the index maps, depending on the picture type
+        :return:
+        """
         if self.picture_type == "Handheld":
             rowmask_name = "rowmask_py5fullresTGI_tile1x1"
             idxmap_name = "idx_map_combine_py5fullresTGI_tile1x1"
@@ -70,7 +74,20 @@ class SegmentationCalculator:
 
     def image_segmentation(self, image, path_myDate, path_trainings, path_current_segmentation, pic_name,
                            path_trained_classification_model):
-
+        """
+        Segment images into vegetation and background.
+        Images are first classified according to the light contrast.
+        Handheld images and images from 10m UAV flights are segmented fully. Only the central tile is processed for
+        50m UAV images.
+        Resulting masks are saved. Binary masks are returned.
+        :param image: Image to segment.
+        :param path_myDate: path (character string)
+        :param path_trainings: path (character string)
+        :param path_current_segmentation: path( character string)
+        :param pic_name: path (character string)
+        :param path_trained_classification_model: path (character string)
+        :return: Binary segmentation mask
+        """
         path_currentImage = os.path.join(path_myDate, image)
         pictureCurrent_all = mpimg.imread(str(path_currentImage))
 
@@ -161,7 +178,24 @@ class SegmentationCalculator:
                             path_current_segmentation,
                             path_current_json,
                             path_current_prediction):
-
+        """
+        Post-processes the raw segmentation mask. Loads image-based features. Extracts features for all retained objects
+        of the post-processed mask. Assembles the full feature data set. Applies the previously trained object
+        classification model to each object.
+        Writes post-processed masks and overlays to specified directories.
+        :param mask: Raw binary mask
+        :param image: Original image
+        :param pic_name: Image name
+        :param base_output_folder: path (character string)
+        :param path_myDate: path (character string)
+        :param path_row_mask: path (character string)
+        :param path_rowsprof: path (character string)
+        :param path_trained_component_classification_model: path (character string)
+        :param path_current_segmentation: path (character string)
+        :param path_current_json: path (character string)
+        :param path_current_prediction: path (character string)
+        :return: Weed mask, Image overlay
+        """
         # read original image
         path_currentImage = os.path.join(path_myDate, image)
         pictureCurrent_all = mpimg.imread(str(path_currentImage))
@@ -360,6 +394,14 @@ class SegmentationCalculator:
 
     def process_handheld_mask(self, path_current_img, pic_name, path_current_json,
                               contour_mask, path_output_date_csv):
+        """
+        Extracts the percentage of the roi covered with weeds and writes to csv
+        :param path_current_img: path (character string)
+        :param pic_name: image name
+        :param path_current_json: path (character string)
+        :param contour_mask: the weed mask obtained from "classify_components"
+        :param path_output_date_csv: path (character string)
+        """
         # check whether geojson file exists
         current_image = imageio.imread(path_current_img)
         if not Path("{path_current_j}/{pic_n}.geojson".format(path_current_j=path_current_json,
@@ -378,6 +420,9 @@ class SegmentationCalculator:
         df_coverage.to_csv(output_namer, index=False, header=False)
 
     def iterate_farmers(self):
+        """
+        Wrapper. Processes all images for all farmers and all measurement dates. Writes predicted weed coverage to csv.
+        """
         for farmer in self.farmers:
             farmer_region = utils.get_farmer_region(farmer)
             path_myfarm = os.path.join(self.workdir, farmer_region, farmer, self.picture_type)
@@ -543,8 +588,7 @@ class SegmentationCalculator:
                             else:
                                 print('>>Output already exists. Skipping grid filling.')
 
-    # ======================================================================================================================
-    # ======================================================================================================================
+    # ==================================================================================================================
 
     def iterate_farmers_postharvest(self, dates):
         for farmer in self.farmers:
@@ -675,8 +719,6 @@ class SegmentationCalculator:
                     print(f'Skipping a Campaign: {date}')
                     continue
 
-
-# ======================================================================================================================
 # ======================================================================================================================
 
 # initiate the class and use the writen functions
@@ -689,4 +731,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-########################################################################################################################
+# ======================================================================================================================

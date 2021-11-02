@@ -27,7 +27,6 @@ def run(workdir, pic_format=None):
     picture_type = "Handheld"
     picture_roi = ""
     features = "reconstruct"
-
     farmers = ["Bolli"]
     gridSize = 0.5
     agisoft_path = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
