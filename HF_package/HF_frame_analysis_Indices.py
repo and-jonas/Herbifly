@@ -1,22 +1,25 @@
+
+# ======================================================================================================================
 # Author: Flavian Tschurr
 # Project: Herbifly
 # Script use: wrapper script to analyse frames (as geojson) from an orthomosaic on single images
 # This wrapper uses the output masks of the HF_segmentation_main!! It is not a standalone script, no segmentation and
 # classification is applied to reduce comnputing time and bias from different segmentation results
 # Date: 17.06.2020
-# Last edited: Jonas Anderegg, 2021-11-01
+# Last edited: Jonas Anderegg, 2021-11-02
+# ======================================================================================================================
 
-########################################################################################################################
 # imports
-########################################################################################################################
-
 import pandas as pd
 import os
 
 native_os_path_join = os.path.join
 def modified_join(*args, **kwargs):
     return native_os_path_join(*args, **kwargs).replace('\\', '/')
+
+
 os.path.join = modified_join
+
 
 import geojson
 import Metashape
@@ -24,12 +27,12 @@ from pathlib import Path
 import matplotlib.image as mpimg
 import copy
 
-import utils as utils
-import FrameFunctions as FrameFunctions
-import AgisoftFunctions as AgisoftFunctions
-import plant_indices as plant_indices
+import HF_package.utils as utils
+import HF_package.FrameFunctions as FrameFunctions
+import HF_package.AgisoftFunctions as AgisoftFunctions
+import HF_package.plant_indices as plant_indices
 
-########################################################################################################################
+# ======================================================================================================================
 
 # set variables
 farmers = ["Baumberger1", "Baumberger2", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny", "Miauton"]
@@ -41,7 +44,7 @@ picture_format = "JPG"
 # indices to extract
 index_names = ["TGI", "ExG", "ExGR", "GLI", "NDI", "VEG"]
 
-########################################################################################################################
+# ======================================================================================================================
 
 # iterate over farmers
 for farmer in farmers:
@@ -74,7 +77,6 @@ for farmer in farmers:
 
         # iterate over dates
         dates = os.listdir(path_geojsons_folder)
-        dates = ["20200712"]
         for date in dates:
             if utils._check_date_name(date):
                 path_current_masks = os.path.join(base_output_folder_farmer, 'mask', date)
