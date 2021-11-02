@@ -8,7 +8,6 @@
 ########################################################################################################################
 
 import Metashape
-import pandas as pd
 from pathlib import Path
 import os
 native_os_path_join = os.path.join

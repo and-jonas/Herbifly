@@ -49,6 +49,8 @@ for farmer in farmers:
     # iterate over indices
     for index in index_names:
 
+        print(index)
+
         # fix index function
         if index == "TGI":
             index_function = plant_indices.index_TGI
@@ -72,6 +74,7 @@ for farmer in farmers:
 
         # iterate over dates
         dates = os.listdir(path_geojsons_folder)
+        dates = ["20200712"]
         for date in dates:
             if utils._check_date_name(date):
                 path_current_masks = os.path.join(base_output_folder_farmer, 'mask', date)
