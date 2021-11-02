@@ -605,7 +605,8 @@ class SegmentationCalculator:
             # path_myproject = os.path.join(self.workdir, "Processed_Campaigns",farmer_region,farmer, self.picture_type)
             path_myproject = os.path.join(self.agisoft_path, farmer_region, farmer, self.picture_type)
 
-            # pre trained model for the classification of pixels --> training is done with the script: train_svm_clf.py
+            # pre-trained model for the classification of pixels
+            # --> training is done with the script: train_light_contrast_classifier.py
             path_trained_classification_model = os.path.join(self.workdir,
                                                              "Meta/classification_model/svm_clf_lc_probs.pkl")
 
