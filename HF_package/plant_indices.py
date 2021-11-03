@@ -12,20 +12,8 @@ import cv2
 
 
 def index_GLI(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
-
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
+    R, G, B = cv2.split(pictureCurrent)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
@@ -36,20 +24,9 @@ def index_GLI(pictureCurrent):
 
 
 def index_TGI(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
+    R, G, B = cv2.split(pictureCurrent)
 
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
@@ -69,20 +46,9 @@ def index_TGI(pictureCurrent):
 
 
 def index_VEG(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
+    R, G, B = cv2.split(pictureCurrent)
 
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
@@ -98,20 +64,9 @@ def index_VEG(pictureCurrent):
 
 
 def index_ExG(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
+    R, G, B = cv2.split(pictureCurrent)
 
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
@@ -123,20 +78,9 @@ def index_ExG(pictureCurrent):
 
 
 def index_NDI(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
+    R, G, B = cv2.split(pictureCurrent)
 
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
@@ -148,20 +92,9 @@ def index_NDI(pictureCurrent):
 
 
 def index_ExGR(pictureCurrent):
-    a_XYZ_8bit = pictureCurrent
-    # Cut image
-    pixel_shift = 0
-    a_XYZ_8bit = a_XYZ_8bit[
-                 pixel_shift:a_XYZ_8bit.shape[0] - pixel_shift,
-                 pixel_shift:a_XYZ_8bit.shape[1] - pixel_shift,
-                 :
-                 ]
 
-    # Convert XYZ to RGB space using opencv (cv2)
-    a_RGB_8bit = cv2.cvtColor(a_XYZ_8bit, cv2.COLOR_XYZ2RGB)
+    R, G, B = cv2.split(pictureCurrent)
 
-    # Calcualte vegetation indices: ExR and ExG
-    R, G, B = cv2.split(a_RGB_8bit)
     normalizer = np.array(R + G + B, dtype=np.float32)
     # Avoid division by zero
     normalizer[normalizer == 0] = 1
