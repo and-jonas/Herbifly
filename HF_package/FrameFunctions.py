@@ -1,13 +1,19 @@
 
-# Author: Flavian Tschurr
+# ======================================================================================================================
+# Author: Flavian Tschurr, Jonas Anderegg
 # Project: Herbifly; this Module contains functions used for the frame validation wrapper script
 # Date: 17.06.2020
+# Last modified: Jonas Anderegg, 2021-11-03
+# ======================================================================================================================
 
-########################################################################################################################
 # imports
 import numpy as np
 from matplotlib import path
-########################################################################################################################
+import os
+import geojson
+import HF_package.utils as utils
+
+# ======================================================================================================================
 
 
 def image_finder(cornersDF, polygon_coords):
@@ -82,3 +88,24 @@ def polygon_value_calculator(corner_grid_pic, contour_mask):
     return mean_out
 
 
+def filter_images_frames(path_current_json, cornersDF):
+    geojsons = os.listdir(path_current_json)
+    for geoj in geojsons:
+        if utils._check_geojson(geoj):
+            path_geojson_current = os.path.join(path_current_json)  # needs to be adapted!
+            with open("{path_geo}/{pic_n}".format(path_geo=path_geojson_current, pic_n=geoj),
+                      'r') as infile:
+                polygon_mask = geojson.load(infile)
+                polygons = polygon_mask["features"]
+                # iterate over the polygons within the geojson file
+                images_use = []
+                for polygon in polygons:
+                    coords = polygon["geometry"]["coordinates"][0][0]  # might be needed for 10m?!
+                    images = image_finder(cornersDF, coords)
+                    try:
+                        images = images[0][0]
+                    except IndexError:
+                        continue
+                    images_use.append(images)
+
+    return images_use

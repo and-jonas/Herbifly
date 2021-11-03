@@ -39,6 +39,7 @@ import HF_package.AgisoftFunctions as AgisoftFunctions
 import HF_package.HandheldFunctions as HandheldFunctions
 import HF_package.ClfFunctions as ClfFunctions
 import HF_package.LcClfUtils as LcClfUtils
+import HF_package.FrameFunctions as FrameFunctions
 
 
 # ======================================================================================================================
@@ -494,8 +495,8 @@ class SegmentationCalculator:
                         # iterate over images used in Agisoft project
                         images_name = cornersDF.camera
                         # iterate over images containing frames
-                        images_name = utils.filter_images_frames(path_current_json=path_current_json,
-                                                                 cornersDF=cornersDF)
+                        images_name = FrameFunctions.filter_images_frames(path_current_json=path_current_json,
+                                                                          cornersDF=cornersDF)
 
                         images = []
                         for image in images_name:

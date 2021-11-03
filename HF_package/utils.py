@@ -208,5 +208,3 @@ def average_preds(tpl):
         res = statistics.mean(res)
         out.append(res)
     return out
-
-
