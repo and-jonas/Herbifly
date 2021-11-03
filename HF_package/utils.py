@@ -195,7 +195,7 @@ def set_contour_dilation_factors(picture_type, contour_type, reconstruct):
                 ctype = 'original'
                 dfact = list(range(2, 14))
     elif picture_type == "10m":
-        if contour_type == 125:
+        if contour_type == 255:
             ctype = 'original'
             dfact = list(range(2, 6))
     return ctype, dfact

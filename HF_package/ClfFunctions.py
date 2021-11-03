@@ -81,7 +81,6 @@ def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max
     # if object is larger, it is highly likely that - if weeds - it is connected to wheat objects
     # this situation cannot be addressed in this object-based approach
     max_size = max_weed_size
-
     output2 = np.where(output > 0, 1, output).astype("uint8")
     mask_cleaned = utils.filter_objects_size(output2, max_size, "greater")
 
@@ -1025,7 +1024,8 @@ def extract_obj_features(img, picture_type,
     # get predictors for each (labelled) contour
     preds = []
     print("---extracting features...")
-    contours0 = contours0[0:2]
+
+    contours0 = contours0[0:5]                                                                                           ## REMOVE !!!
 
     for i, c in enumerate(contours0):
 

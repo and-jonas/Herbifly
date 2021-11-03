@@ -306,9 +306,13 @@ class SegmentationCalculator:
             if self.picture_type == "Handheld":
                 rowsprof = mpimg.imread(path_rowsprof_current)
                 orig_mask_filtered = cv2.medianBlur(mask, 5)
-            else:
+            elif self.picture_type == "10m" and self.picture_roi == "tile":
                 rowsprof = mpimg.imread(path_rowsprof_current)[1216:2432, 1824:3648]
                 orig_mask_filtered = np.where(ppmask == 0, ppmask, 255)
+            elif self.picture_type == "10m" and self.picture_roi == "fullsize":
+                rowsprof = mpimg.imread(path_rowsprof_current)
+                orig_mask_filtered = np.where(ppmask == 0, ppmask, 255)
+
             # extract predictor data from images
             comps, X = ClfFunctions.extract_obj_features(img=img,
                                                          picture_type=self.picture_type,
@@ -339,12 +343,14 @@ class SegmentationCalculator:
         # CLASSIFY OBJECTS AND CREATE WEED MASKS
         # ==============================================================================================================
 
-        path_predicted_image = "{path_current_j}/{pic_n}_predicted_image.tif".format(
+        path_predicted_image = "{path_current_j}/{pic_roi}/{pic_n}_predicted_image.tif".format(
             path_current_j=path_current_prediction,
+            pic_roi=self.picture_roi,
             pic_n=pic_name
         )
-        path_predicted_mask = "{path_current_j}/{pic_n}_predicted_mask.tif".format(
+        path_predicted_mask = "{path_current_j}/{pic_roi}/{pic_n}_predicted_mask.tif".format(
             path_current_j=path_current_prediction,
+            pic_roi=self.picture_roi,
             pic_n=pic_name
         )
         if not Path(path_predicted_mask).exists():
@@ -549,10 +555,9 @@ class SegmentationCalculator:
                             # Object Classification
                             # ==========================================================================================
 
-                            # path_current_weed_mask = Path(
-                            #     os.path.join(f'{path_current_prediction}/weed_mask_{pic_name}.tiff'))
                             path_current_weed_mask = Path(
-                                os.path.join(f'{path_current_prediction}/{pic_name}_predicted_mask.tif'))
+                                os.path.join(f'{path_current_prediction}/{self.picture_roi}/{pic_name}_predicted_mask.tif'))
+
                             if not path_current_weed_mask.exists():
                                 img_clf, mask_clf = self.classify_components(
                                     mask, image, pic_name,
@@ -569,7 +574,8 @@ class SegmentationCalculator:
                                 mask_clf = mpimg.imread(path_current_weed_mask)
 
                             # ==========================================================================================
-                            # extract roi weed coverage
+                            # extract roi weed coverage for handheld images
+                            # extract grid position weed coverage for uav images
                             # ==========================================================================================
 
                             path_current_image = os.path.join(path_myDate, image)
