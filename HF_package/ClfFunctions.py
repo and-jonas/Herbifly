@@ -50,10 +50,12 @@ from HF_package import utils
 # Function to post-process the binary mask
 def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=125):
 
+    print("-post-processing UAV mask...")
+
     # Remove noise and smooth mask borders
     # Define an elliptic or a rectangular structuring element
     # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (4,5))
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_morph[0],kernel_morph[1]))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_morph[0], kernel_morph[1]))
 
     # Perform morphological closing (i.e. dilation followed by erosion)
     # to smooth contours without simultaneously shrinking components;
@@ -73,28 +75,15 @@ def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max
     closing_blur = cv2.blur(closing, (kernel_closing_blur[0], kernel_closing_blur[1]))
 
     # get components
-    nb_components_cl, output, stats, centroids = cv2.connectedComponentsWithStats(closing_blur,
-                                                                                  connectivity=8)
-    sizes = stats[1:, -1];
-    centroids = centroids[1:, ]
-    # remove background
-    nb_components_cl = nb_components_cl-1
+    nb_components_cl, output, stats, centroids = cv2.connectedComponentsWithStats(closing_blur, connectivity=8)
 
     # define a maximum size of particles to be considered as a distinct weed plant (or small weed patch)
     # if object is larger, it is highly likely that - if weeds - it is connected to wheat objects
     # this situation cannot be addressed in this object-based approach
     max_size = max_weed_size
 
-    # cleaned mask
-    mask_cleaned = np.zeros((output.shape))
-    # for every component in the image,
-    # keep only those smaller than max_size
-    for i in range(0, nb_components_cl):
-        if sizes[i] <= max_size:
-            mask_cleaned[output == i + 1] = 255
-        else:
-            mask_cleaned[output == i + 1] = 125
-    mask_cleaned = np.uint8(mask_cleaned)
+    output2 = np.where(output > 0, 1, output).astype("uint8")
+    mask_cleaned = utils.filter_objects_size(output2, max_size, "greater")
 
     return mask_cleaned
 
@@ -1488,7 +1477,14 @@ def extract_obj_features(img, picture_type,
 
 
 def extract_img_features(path_rowmask, picture_type):
-
+    """
+    Extracts the mean tgi value for detected crop rows and for the inter-row space from full images.
+    Must use different sources of information, depending on the type of image and on the date. HORRIBLE!!!!
+    These files should all be regenerated in the exact same manner, for handheld images and for UAV images.
+    :param path_rowmask: path (character string)
+    :param picture_type: picture type (character string)
+    :return: the means row tgi and the mean interspace tgi; the row mask
+    """
     if picture_type == "Handheld":
         rows = mpimg.imread(path_rowmask)
         path_row_json = re.sub(".tif", ".json", path_rowmask)
@@ -1507,8 +1503,16 @@ def extract_img_features(path_rowmask, picture_type):
             vs_row = json.loads(v)['idx_row']
             vs_is = json.loads(v)['idx_is']
         except TypeError:
-            vs_row = json.loads(v)[4]['idx_row']
-            vs_is = json.loads(v)[4]['idx_is']
+            try:
+                vs_row = json.loads(v)[4]['idx_row']
+                vs_is = json.loads(v)[4]['idx_is']
+            except KeyError:
+                path_row_json = re.sub(".tif", ".json", path_rowmask)
+                with open(path_row_json) as json_file:
+                    data = json.load(json_file)
+                vs_row = data['plantindex_row'][4]['idx_row']
+                vs_is = data['plantindex_interspace'][4]['idx_is_mid']
+
     mean_row_tgi = np.asarray(vs_row).mean()
     mean_is_tgi = np.asarray(vs_is).mean()
     rows, _, _, _ = cv2.split(rows)

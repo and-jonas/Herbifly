@@ -160,7 +160,8 @@ class SegmentationCalculator:
         imageio.imwrite(
             "{path_current_segm}/{pic_n}.tif".format(path_current_segm=path_current_segmentation,
                                                      pic_n=pic_name), a_segmented * 255)
-        if self.picture_type == "Handheld":
+
+        if self.picture_type == "Handheld" or (self.picture_type == "10m" and self.picture_roi == "fullsize"):
             imageio.imwrite(
                 "{path_current_segm}/{pic_n}_tile_orig.tif".format(path_current_segm=path_current_segmentation,
                                                                    pic_n=pic_name), pictureCurrent_all)
@@ -210,6 +211,7 @@ class SegmentationCalculator:
 
         path_row_mask_current = "{path_row_m}/{pic_n}_rowmask.tif".format(path_row_m=path_row_mask,
                                                                           pic_n=pic_name)
+
         mean_row_tgi, mean_is_tgi, rows = ClfFunctions.extract_img_features(path_rowmask=path_row_mask_current,
                                                                             picture_type=self.picture_type)
 
@@ -550,7 +552,7 @@ class SegmentationCalculator:
                             # path_current_weed_mask = Path(
                             #     os.path.join(f'{path_current_prediction}/weed_mask_{pic_name}.tiff'))
                             path_current_weed_mask = Path(
-                                os.path.join(f'{path_current_prediction}/{pic_name}_predicted_mask_TEMP.tif'))
+                                os.path.join(f'{path_current_prediction}/{pic_name}_predicted_mask.tif'))
                             if not path_current_weed_mask.exists():
                                 img_clf, mask_clf = self.classify_components(
                                     mask, image, pic_name,
