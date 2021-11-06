@@ -195,7 +195,7 @@ def set_contour_dilation_factors(picture_type, contour_type, reconstruct):
                 ctype = 'original'
                 dfact = list(range(2, 14))
     elif picture_type == "10m":
-        if contour_type == 125:
+        if contour_type == 255:
             ctype = 'original'
             dfact = list(range(2, 6))
     return ctype, dfact
@@ -208,3 +208,22 @@ def average_preds(tpl):
         res = statistics.mean(res)
         out.append(res)
     return out
+
+
+def filter_objects_size(mask, size_th, dir):
+    """
+    Filter objects in a binary mask by size
+    :param mask: A binary mask to filter
+    :param size_th: The size threshold used to filter (objects GREATER than the threshold will be kept)
+    :return: A binary mask containing only objects greater than the specified threshold
+    """
+    _, output, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    sizes = stats[1:, -1]
+    if dir == "greater":
+        idx = (np.where(sizes > size_th)[0] + 1).tolist()
+    if dir == "smaller":
+        idx = (np.where(sizes < size_th)[0] + 1).tolist()
+    out = np.in1d(output, idx).reshape(output.shape)
+    cleaned = np.where(out, 125, mask*255)
+
+    return cleaned

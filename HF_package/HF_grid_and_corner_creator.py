@@ -14,8 +14,8 @@ native_os_path_join = os.path.join
 def modified_join(*args, **kwargs):
     return native_os_path_join(*args, **kwargs).replace('\\', '/')
 os.path.join = modified_join
-import utils as utils
-import AgisoftFunctions as AgisoftFunctions
+import HF_package.utils as utils
+import HF_package.AgisoftFunctions as AgisoftFunctions
 
 ########################################################################################################################
 # variables
@@ -24,11 +24,11 @@ import AgisoftFunctions as AgisoftFunctions
 # workdir = Path('../').resolve()
 workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
 workdir_out = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
-picture_type = "30m"
+picture_type = "10m"
 gridSize = 0.5
 pic_format = ".JPG"
-farmers = ["Baumberger2", "Baumberger1", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny","Miauton"]
-images = "full_size"  # "full_size" or "tile"
+farmers = ["Bonny", "Baumberger2", "Baumberger1", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Miauton"]
+picture_roi = "fullsize"  # "fullsize" or "tile"
 
 ########################################################################################################################
 # start of the calculation and iteration over the farmer etc.
@@ -59,12 +59,12 @@ for farmer in farmers:
             path_project = os.path.join(path_myfarm, date, project)
             doc.open(path_project)
             chunk = doc.chunk
-            if images == "full_size":
+            if picture_roi == "fullsize":
                 cornersDF = AgisoftFunctions.get_corner_coordinates(chunk)
-            elif images == "tile":
+            elif picture_roi == "tile":
                 cornersDF = AgisoftFunctions.get_corner_coordinates_middle_tile(chunk)
             cornersDF.to_csv(
-                f'{path_grid_output_corners}/{farmer}_{date}_{picture_type}_{images}_CameraCornerCoordinates.csv')
+                f'{path_grid_output_corners}/{farmer}_{date}_{picture_type}_{picture_roi}_CameraCornerCoordinates.csv')
             # if counter == 1:
             #     x_coords, y_coords = AgisoftFunctions.farmer_grid_creator(cornersDF, gridSize)
             #     oneFieldGrid = pd.DataFrame(data=None, columns=x_coords, index=y_coords)

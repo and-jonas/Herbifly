@@ -20,8 +20,8 @@ def image_finder(cornersDF, polygon_coords):
 
     poly_x = []
     poly_y = []
-    img_of_interest= []
-    for i in range(0,len(polygon_coords)):
+    img_of_interest = []
+    for i in range(0, len(polygon_coords)):
         poly_x.append(polygon_coords[i][0])
         poly_y.append(polygon_coords[i][1])
 
@@ -30,19 +30,20 @@ def image_finder(cornersDF, polygon_coords):
     poly_x_min = float(min(poly_x))
     poly_y_max = float(max(poly_y))
     poly_y_min = float(min(poly_y))
-    # poly_x_max = 2604895.9
-    # poly_x_min = 2604895.7
-    # poly_y_max = 1225104.8
-    # poly_y_min = 1225104.6
 
-    for image in range(0,len(cornersDF.camera)):
+    for image in range(0, len(cornersDF.camera)):
         # print(image)
-        img_x=[float(cornersDF.loc[image:image].e1_x),float(cornersDF.loc[image:image].e2_x),
-               float(cornersDF.loc[image:image].e3_x),float(cornersDF.loc[image:image].e4_x)]
-        img_y=[float(cornersDF.loc[image:image].e1_y),float(cornersDF.loc[image:image].e2_y),
-               float(cornersDF.loc[image:image].e3_y),float(cornersDF.loc[image:image].e4_y)]
+        img_x = [float(cornersDF.loc[image:image].e1_x), float(cornersDF.loc[image:image].e2_x),
+                 float(cornersDF.loc[image:image].e3_x), float(cornersDF.loc[image:image].e4_x)]
+        img_y = [float(cornersDF.loc[image:image].e1_y), float(cornersDF.loc[image:image].e2_y),
+                 float(cornersDF.loc[image:image].e3_y), float(cornersDF.loc[image:image].e4_y)]
 
-        if min(img_x) < poly_x_min < max(img_x) and min(img_x) < poly_x_max < max(img_x) and min(img_y) < poly_y_min < max(img_y) and min(img_y) < poly_y_max < max(img_y):
+        # if min(img_x) < poly_x_min < max(img_x) and min(img_x) < poly_x_max < max(img_x) and min(img_y) < poly_y_min < max(img_y) and min(img_y) < poly_y_max < max(img_y):
+        #     img_of_interest.append([cornersDF.loc[image].camera, image])
+
+        # select more conservatively:
+        if min(img_x)+2 < poly_x_min < max(img_x)-2 and min(img_x)+2 < poly_x_max < max(img_x)-2 and \
+                min(img_y)+2 < poly_y_min < max(img_y)-2 and min(img_y)+2 < poly_y_max < max(img_y)-2:
             img_of_interest.append([cornersDF.loc[image].camera, image])
 
     return img_of_interest
@@ -103,9 +104,9 @@ def filter_images_frames(path_current_json, cornersDF):
                     coords = polygon["geometry"]["coordinates"][0][0]  # might be needed for 10m?!
                     images = image_finder(cornersDF, coords)
                     try:
-                        images = images[0][0]
+                        # images = images[0][0]  ## wtf ?????
+                        images = [sel[0] for sel in images]
                     except IndexError:
                         continue
-                    images_use.append(images)
-
+                    images_use.extend(images)
     return images_use
