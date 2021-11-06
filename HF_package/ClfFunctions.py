@@ -1025,8 +1025,6 @@ def extract_obj_features(img, picture_type,
     preds = []
     print("---extracting features...")
 
-    contours0 = contours0[0:5]                                                                                           ## REMOVE !!!
-
     for i, c in enumerate(contours0):
 
         print(f'----{i+1}/{len(ccc)}')
