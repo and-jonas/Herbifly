@@ -210,6 +210,25 @@ def average_preds(tpl):
     return out
 
 
+def filter_objects_size_remove(mask, size_th, dir):
+    """
+    Filter objects in a binary mask by size
+    :param mask: A binary mask to filter
+    :param size_th: The size threshold used to filter (objects GREATER than the threshold will be kept)
+    :return: A binary mask containing only objects greater than the specified threshold
+    """
+    _, output, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    sizes = stats[1:, -1]
+    if dir == "greater":
+        idx = (np.where(sizes > size_th)[0] + 1).tolist()
+    if dir == "smaller":
+        idx = (np.where(sizes < size_th)[0] + 1).tolist()
+    out = np.in1d(output, idx).reshape(output.shape)
+    cleaned = np.where(out, 0, mask)
+
+    return cleaned
+
+
 def filter_objects_size(mask, size_th, dir):
     """
     Filter objects in a binary mask by size
