@@ -27,9 +27,9 @@ def run(workdir, pic_format=None):
     picture_type = "Handheld"
     picture_roi = ""
     features = "reconstruct"
-    farmers = ["Bolli"]
+    farmers = ["Stettler", "Bolli", "Egli", "Keller", "Miauton", "Bonny", "Scheidegger"]
     gridSize = 0.5
-    agisoft_path = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
+    agisoft_path = "O:/Hiwi/2020_Herbifly/Processed_Campaigns"
     segmentation_calculator = SegmentationCalculator(workdir, picture_type, picture_roi,
                                                      pic_format, features, farmers, gridSize, agisoft_path)
     segmentation_calculator.iterate_farmers()
@@ -38,7 +38,7 @@ def run(workdir, pic_format=None):
 
 if __name__ == '__main__':
     # workdir = Path('../').resolve()
-    workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
+    workdir = "O:/Hiwi/2020_Herbifly/Images_Farmers"
     run(workdir)
 
 

@@ -247,7 +247,8 @@ class SegmentationCalculator:
         # (validation --> set value for 10m drone flight divide by the reference_meter of the drone flight)
         kernel_morph_multiplier = [0.010964912280701754, 0.013706140350877192]  # [4, 5]
         kernel_closing_blur_multiplier = [0.005482456140350877, 0.008223684210526315]  # [2, 3]
-        max_weed_size_multiplier = 0.3426535087719299  # 125
+        max_weed_size_multiplier = 0.4111842105263158  # 150
+        min_weed_size_multiplier = 0.024671052631578948  # 9
 
         # standardise input values using reference meter and pass clf function
         kernel_morph = [int(kernel_morph_multiplier[0] * reference_meter),
@@ -255,6 +256,7 @@ class SegmentationCalculator:
         kernel_closing = [int(kernel_closing_blur_multiplier[0] * reference_meter),
                           int(kernel_closing_blur_multiplier[1] * reference_meter)]
         max_weed_size = int(max_weed_size_multiplier * reference_meter)
+        min_weed_size = int(min_weed_size_multiplier * reference_meter)
 
         if self.picture_type == "Handheld":
             # check if output already exists
@@ -282,6 +284,7 @@ class SegmentationCalculator:
             ppmask = ClfFunctions.post_process_mask(mask,
                                                     kernel_morph=kernel_morph,
                                                     kernel_closing_blur=kernel_closing,
+                                                    min_weed_size=min_weed_size,
                                                     max_weed_size=max_weed_size)
             # Colors not needed here, wheat removed directly
             ppmask = np.where(ppmask == 125, 0, ppmask)
@@ -328,7 +331,11 @@ class SegmentationCalculator:
         # ==============================================================================================================
 
         # to ensure equal column order in training data and data for predictions
-        path_training_data = f'{base_output_folder}/test_output/training_data/{self.features}/training_data_bal.csv'
+        if self.picture_type == "Handheld":
+            path_training_data = f'{base_output_folder}/test_output/training_data/{self.features}/training_data_bal.csv'
+        else:
+            path_training_data = os.path.join(self.workdir, "Output", f'{self.picture_type}_output',
+                                              "test_output", "training_data", self.features, "training_data_bal.csv")
         template = pd.io.parsers.read_csv(path_training_data)
         name_order = list(template.columns)[2:]
         X = pd.DataFrame(X)
@@ -415,9 +422,10 @@ class SegmentationCalculator:
         current_image = imageio.imread(path_current_img)
         if not Path("{path_current_j}/{pic_n}.geojson".format(path_current_j=path_current_json,
                                                               pic_n=pic_name)).exists():
-            corners = ImageFunctions.capture_plot_shape_GUI(current_image)
-            HandheldFunctions.write_geojson_polygon_mask_handheld(corners=corners, image_name=pic_name,
-                                                                  path_folder=path_current_json)
+            print("No polygon found. Skipping.")
+            # corners = ImageFunctions.capture_plot_shape_GUI(current_image)
+            # HandheldFunctions.write_geojson_polygon_mask_handheld(corners=corners, image_name=pic_name,
+            #                                                       path_folder=path_current_json)
         with open("{path_current_j}/{pic_n}.geojson".format(path_current_j=path_current_json, pic_n=pic_name),
                   'r') as infile:
             polygon_mask = geojson.load(infile)
@@ -436,8 +444,12 @@ class SegmentationCalculator:
             farmer_region = utils.get_farmer_region(farmer)
             path_myfarm = os.path.join(self.workdir, farmer_region, farmer, self.picture_type)
             picture_output = "{picture_t}_output".format(picture_t=self.picture_type)
-            base_output_folder = os.path.join(self.workdir, "Output", picture_output)
-            base_output_folder_farmer = os.path.join(self.workdir, "Output", picture_output, farmer)
+            if self.picture_type == "Handheld":
+                base_output_folder = os.path.join(self.workdir, "Output", picture_output)
+                base_output_folder_farmer = os.path.join(self.workdir, "Output", picture_output, farmer)
+            else:
+                base_output_folder = os.path.join(self.workdir, "Output", picture_output, self.features)
+                base_output_folder_farmer = os.path.join(self.workdir, "Output", picture_output, self.features, farmer)
             path_trainings = os.path.join(self.workdir, f'Meta/trained_rf/{self.picture_type}/')
             path_previews = os.path.join(base_output_folder_farmer, 'previews')
             path_segmentation = os.path.join(base_output_folder_farmer, 'segmentation')

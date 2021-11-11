@@ -36,13 +36,15 @@ import HF_package.plant_indices as plant_indices
 
 # set variables
 farmers = ["Baumberger1", "Baumberger2", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny", "Miauton"]
-agisoft_path = "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
-workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
+farmers = ["Baumberger1"]
+agisoft_path = "O:/Hiwi/2020_Herbifly/Processed_Campaigns"
+workdir = "O:/Hiwi/2020_Herbifly/Images_Farmers"
 picture_type = "30m"
 picture_format = "JPG"
 
 # indices to extract
 index_names = ["TGI", "ExG", "ExGR", "GLI", "NDI", "VEG"]
+index_names = ["TGI"]
 
 # ======================================================================================================================
 
@@ -121,7 +123,6 @@ for farmer in farmers:
                                 images = FrameFunctions.image_finder(cornersDF, coords)
                                 for image in images:
                                     img_id = image[0]
-                                    print(img_id)
                                     # agisoft chunk to translate real word coordinates into image coordinates
                                     # THIS DOES NOT SEEM TO WORK, PROBABLY DUE TO CAMERAS NOT USED IN ALIGNMENT
                                     # camera = chunk.cameras[image[1]]
@@ -155,7 +156,7 @@ for farmer in farmers:
                                     if AgisoftFunctions.pic_coordinate_checker(coords_pic, sens):
 
                                         image_name = "{img}.{pic_form}".format(img=image[0], pic_form=picture_format)
-                                        print(image_name)
+                                        # print(image_name)
                                         path_RGB_image = os.path.join(path_RGB_date, image_name)
                                         RGB_pic = mpimg.imread(str(path_RGB_image))
                                         index_pic = index_function(RGB_pic)

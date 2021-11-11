@@ -48,7 +48,7 @@ from HF_package import utils
 
 
 # Function to post-process the binary mask
-def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=125):
+def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=150, min_weed_size=7):
 
     print("-post-processing UAV mask...")
 
@@ -77,12 +77,16 @@ def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max
     # get components
     nb_components_cl, output, stats, centroids = cv2.connectedComponentsWithStats(closing_blur, connectivity=8)
 
+    # convert to binary
+    output2 = np.where(output > 0, 1, output).astype("uint8")
+
+    # define minimum size of particles
+    mask_cleaned = utils.filter_objects_size_remove(output2, min_weed_size, "smaller")
+
     # define a maximum size of particles to be considered as a distinct weed plant (or small weed patch)
     # if object is larger, it is highly likely that - if weeds - it is connected to wheat objects
     # this situation cannot be addressed in this object-based approach
-    max_size = max_weed_size
-    output2 = np.where(output > 0, 1, output).astype("uint8")
-    mask_cleaned = utils.filter_objects_size(output2, max_size, "greater")
+    mask_cleaned = utils.filter_objects_size(mask_cleaned, max_weed_size, "greater")
 
     return mask_cleaned
 
@@ -700,7 +704,7 @@ def dilate_contour(img, contour, ctype, npix):
     # blurring sometimes results in the loss of the contour,
     # catch by using original contour
     except ValueError or ZeroDivisionError:
-        cont, _ = cv2.findContours(blank, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        _, cont, _ = cv2.findContours(blank, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         c = max(cont, key=cv2.contourArea)
 
     # if the convex hull should be returned
@@ -1024,7 +1028,6 @@ def extract_obj_features(img, picture_type,
     # get predictors for each (labelled) contour
     preds = []
     print("---extracting features...")
-
     for i, c in enumerate(contours0):
 
         print(f'----{i+1}/{len(ccc)}')
@@ -1078,86 +1081,6 @@ def extract_obj_features(img, picture_type,
             ctype=ctype,
             regrown=reconstruct
         )
-
-        # # get different dilatation of contours and sample
-        # vector = []
-        # blank0 = np.zeros(img.shape[:2], dtype=np.uint8)
-        # img2 = copy.copy(img)
-        # for k in range(len(dfact)):
-        #
-        #     # define empty masks to draw contours and hulls onto
-        #     blank = np.zeros(img.shape[:2], dtype=np.uint8)
-        #     blank_a = copy.copy(blank)
-        #     blank_b = copy.copy(blank)
-        #
-        #     # draw thick contours (dilatation)
-        #     cv2.drawContours(blank_a, ccc[i], -1, 255, dfact[k])
-        #     cv2.fillPoly(blank_a, pts=[ccc[i]], color=255)
-        #     # this is needed for contours lying on the image edge!!
-        #     res0 = cv2.medianBlur(blank_a, 5)
-        #
-        #     # get the dilated contour
-        #     cnt_dil, _ = cv2.findContours(res0, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        #
-        #     # get centroid of contour
-        #     M = cv2.moments(cnt_dil[0])
-        #     cX = int(M["m10"] / M["m00"])
-        #     cY = int(M["m01"] / M["m00"])
-        #     ctr = [cY, cX]
-        #     cv2.circle(img2, (cX, cY), 5, (255, 0, 0), -1)
-        #
-        #     # convex hull
-        #     c_hull = cv2.convexHull(cnt_dil[0], False)
-        #     cv2.drawContours(blank_b, [c_hull], -1, 75, 1)
-        #     cv2.drawContours(img2, [c_hull], -1, (0, 0, 255), 1)
-        #     cv2.drawContours(blank_a, cnt_dil, -1, 125, 1)
-        #     cv2.drawContours(img2, cnt_dil, -1, (0, 255, 0), 1)
-        #
-        #     # extract coordinates
-        #     coords_cont = np.where(blank_a == 125)
-        #     coords_chull = np.where(blank_b == 75)
-        #
-        #     coords = coords_cont
-        #
-        #     # get centroid of contour
-        #     M = cv2.moments(c_hull)
-        #     cX = int(M["m10"] / M["m00"])
-        #     cY = int(M["m01"] / M["m00"])
-        #     ctr = [cY, cX]
-        #
-        #     # transform from cartesian to polar coordinates
-        #     c_pol = utils.cart2pol(x=coords[1], y=coords[0], ctr=ctr)
-        #
-        #     # sort according to angle
-        #     cxx = np.argsort(c_pol[1])
-        #     ang = c_pol[1][cxx]
-        #     pos = c_pol[0][cxx]
-        #     # get contour pixel values and reorder
-        #     cpix_vals = np.bitwise_not(orig_mask_filtered)[coords]
-        #     vals = cpix_vals[cxx]
-        #     # interpolate to specific angles
-        #     newang = np.arange(start=-math.pi, stop=math.pi, step=math.pi/1080)
-        #     vv = np.interp(x=newang, xp=ang, fp=vals)
-        #     vector.append(vv)
-        #
-        #     # back to cartesian coordinates
-        #     ccart = utils.pol2cart(rho=pos, phi=ang, ctr=ctr)
-        #     blank0[ccart] = cv2.bitwise_not(orig_mask_filtered)[ccart]
-        #
-        # # Plot result
-        # fig, axs = plt.subplots(1, 4, sharex=True, sharey=True)
-        # # Show RGB and segmentation mask
-        # axs[0].imshow(img2)
-        # axs[0].set_title('img')
-        # axs[1].imshow(orig_mask_filtered)
-        # axs[1].set_title('orig_mask')
-        # axs[2].imshow(pp_mask)
-        # axs[2].set_title('post-processed mask')
-        # axs[3].imshow(blank0)
-        # axs[3].set_title('contour scan')
-        # plt.show(block=True)
-        #
-        # print(i)
 
         # ==============================================================================================================
 
@@ -1251,22 +1174,27 @@ def extract_obj_features(img, picture_type,
         # area ratio (component/convex hull)
         area = sizes[index]  # area of component
         points = utils.flatten_contour_data(contour, asarray=True)  # reshape point data
-        hull = ConvexHull(points)
-        area_hull = hull.volume
-        area_ratio = area / area_hull
+        try:
+            hull = ConvexHull(points)
+            area_hull = hull.volume
+            area_ratio = area / area_hull
 
-        # roundness
-        vertices = hull.vertices.tolist() + [hull.vertices[0]]
-        perimeter = np.sum([distance.euclidean(x, y) for x, y in zip(points[vertices], points[vertices][1:])])
-        roundness = (4 * math.pi * area) / (perimeter * perimeter)
+            # roundness
+            vertices = hull.vertices.tolist() + [hull.vertices[0]]
+            perimeter = np.sum([distance.euclidean(x, y) for x, y in zip(points[vertices], points[vertices][1:])])
+            roundness = (4 * math.pi * area) / (perimeter * perimeter)
 
-        # convexity defects
-        hull = cv2.convexHull(contour[0], returnPoints=False)
-        defects = cv2.convexityDefects(contour[0], hull)
-        if defects is not None:
-            n_convdefs = len(defects)
-        else:
-            n_convdefs = 0
+            # convexity defects
+            hull = cv2.convexHull(contour[0], returnPoints=False)
+            defects = cv2.convexityDefects(contour[0], hull)
+            if defects is not None:
+                n_convdefs = len(defects)
+            else:
+                n_convdefs = 0
+        except:
+            area_ratio = np.NaN
+            roundness = np.NaN
+            n_convdefs = np.NaN
 
         # ==============================================================================================================
 
@@ -1492,7 +1420,11 @@ def extract_img_features(path_rowmask, picture_type):
         vs_row = data['plantindex_row']['idx_row']
         vs_is = data['plantindex_interspace']['idx_is_mid']
     else:
-        rows = mpimg.imread(path_rowmask)[1216:2432, 1824:3648]
+        # Extraworscht für de Herbifly Chröppelrechner
+        # rows = mpimg.imread(path_rowmask)[1216:2432, 1824:3648]
+        rows = imageio.imread(path_rowmask)[1216:2432, 1824:3648]
+        rows = np.where(rows, 0, 1)
+
         with open(path_rowmask, 'rb') as f:
             tags = exifread.process_file(f)
         v = tags['Image ImageDescription'].values
@@ -1513,7 +1445,11 @@ def extract_img_features(path_rowmask, picture_type):
 
     mean_row_tgi = np.asarray(vs_row).mean()
     mean_is_tgi = np.asarray(vs_is).mean()
-    rows, _, _, _ = cv2.split(rows)
+    try:
+        rows, _, _, _ = cv2.split(rows)
+    # Extraworscht für de Herbifly Chröppelrechner
+    except ValueError:
+        rows = rows
 
     return mean_row_tgi, mean_is_tgi, rows
 

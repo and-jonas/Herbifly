@@ -42,8 +42,8 @@ def image_finder(cornersDF, polygon_coords):
         #     img_of_interest.append([cornersDF.loc[image].camera, image])
 
         # select more conservatively:
-        if min(img_x)+2 < poly_x_min < max(img_x)-2 and min(img_x)+2 < poly_x_max < max(img_x)-2 and \
-                min(img_y)+2 < poly_y_min < max(img_y)-2 and min(img_y)+2 < poly_y_max < max(img_y)-2:
+        if min(img_x)+2.5 < poly_x_min < max(img_x)-2.5 and min(img_x)+2.5 < poly_x_max < max(img_x)-2.5 and \
+                min(img_y)+2.5 < poly_y_min < max(img_y)-2.5 and min(img_y)+2.5 < poly_y_max < max(img_y)-2.5:
             img_of_interest.append([cornersDF.loc[image].camera, image])
 
     return img_of_interest
