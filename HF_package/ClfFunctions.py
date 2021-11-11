@@ -48,7 +48,8 @@ from HF_package import utils
 
 
 # Function to post-process the binary mask
-def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=150, min_weed_size=7):
+def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=150,
+                      min_weed_size=13, margin=600):
 
     print("-post-processing UAV mask...")
 
@@ -88,7 +89,9 @@ def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max
     # this situation cannot be addressed in this object-based approach
     mask_cleaned = utils.filter_objects_size(mask_cleaned, max_weed_size, "greater")
 
-    return mask_cleaned
+    out = utils.omit_borders(mask_cleaned, margin=margin)
+
+    return out
 
 
 # Function to collect training data for object classification (adapted from Lukas Roth)

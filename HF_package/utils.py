@@ -246,3 +246,19 @@ def filter_objects_size(mask, size_th, dir):
     cleaned = np.where(out, 125, mask*255)
 
     return cleaned
+
+
+def omit_borders(image_, margin):
+    """
+    Masks borders of images to reduce processing time
+    :param image_: the mask on which to mask borders
+    :return: processed mask
+    """
+
+    h, w = image_.shape[:2]
+    image_[0:margin, :] = 0
+    image_[h-margin:h, :] = 0
+    image_[:, 0:margin] = 0
+    image_[:, w-margin:w] = 0
+
+    return image_
