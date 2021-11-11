@@ -468,7 +468,6 @@ class SegmentationCalculator:
                 Path(path).mkdir(parents=True, exist_ok=True)
 
             dates = os.listdir(path_myfarm)
-
             for date in dates:
 
                 if utils._check_date_name(date):
