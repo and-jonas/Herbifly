@@ -49,7 +49,7 @@ from HF_package import utils
 
 # Function to post-process the binary mask
 def post_process_mask(mask, kernel_morph=[3, 4], kernel_closing_blur=[2, 3], max_weed_size=150,
-                      min_weed_size=13, margin=600):
+                      min_weed_size=13, margin=750):
 
     print("-post-processing UAV mask...")
 

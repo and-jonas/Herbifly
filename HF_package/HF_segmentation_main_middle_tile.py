@@ -248,7 +248,7 @@ class SegmentationCalculator:
         kernel_morph_multiplier = [0.010964912280701754, 0.013706140350877192]  # [4, 5]
         kernel_closing_blur_multiplier = [0.005482456140350877, 0.008223684210526315]  # [2, 3]
         max_weed_size_multiplier = 0.4111842105263158  # 150
-        min_weed_size_multiplier = 0.0356359649122807  # 13
+        min_weed_size_multiplier = 0.05482456140350877  # 20
 
         # standardise input values using reference meter and pass clf function
         kernel_morph = [int(kernel_morph_multiplier[0] * reference_meter),
