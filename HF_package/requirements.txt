@@ -1,0 +1,17 @@
+numpy==1.19.2
+geojson==2.5.0
+exifread==2.3.2
+matplotlib==3.0.3
+imageio==2.8.0
+scipy==1.4.1
+scikit-image==0.17.2
+scikit-learn==0.22.1
+opencv==3.4.2
+pandas==0.25.3
+termcolor==1.1.0
+pillow==8.4.0
+pip==21.2.4
+descartes==1.1.0
+rawpy==0.16.0
+
+
