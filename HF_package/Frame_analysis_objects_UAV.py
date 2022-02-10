@@ -34,9 +34,10 @@ import HF_package.AgisoftFunctions as AgisoftFunctions
 
 farmers = ["Baumberger1", "Baumberger2", "Stettler", "Egli", "Scheidegger", "Keller", "Bolli", "Bonny", "Miauton"]
 farmers = ["Bonny"]
-agisoft_path= "O:/Evaluation/Hiwi/2020_Herbifly/Processed_Campaigns"
-workdir = "O:/Evaluation/Hiwi/2020_Herbifly/Images_Farmers"
+agisoft_path= "O:/Hiwi/2020_Herbifly/Processed_Campaigns"
+workdir = "O:/Hiwi/2020_Herbifly/Images_Farmers"
 picture_type = "10m"
+features = "all"
 picture_roi = "fullsize"
 picture_format = "JPG"
 
@@ -48,8 +49,8 @@ for farmer in farmers:
 
     farmer_region = utils.get_farmer_region(farmer)
     picture_output = "{picture_t}_output".format(picture_t=picture_type)
-    base_output_folder_farmer = os.path.join(workdir, "Output", picture_output, farmer)
-    path_geojsons_folder = path_trainings = os.path.join(workdir, "Meta",farmer, picture_type, "frames")
+    base_output_folder_farmer = os.path.join(workdir, "Output", picture_output, features, farmer)
+    path_geojsons_folder = path_trainings = os.path.join(workdir, "Meta", farmer, picture_type, "frames")
     path_myproject = os.path.join(agisoft_path, farmer_region, farmer, picture_type)
 
     dates = os.listdir(path_geojsons_folder)
@@ -131,13 +132,16 @@ for farmer in farmers:
                                     if AgisoftFunctions.pic_coordinate_checker(coords_pic, sens):
                                         path_countour_mask = "{path_m}/{img}_predicted_mask.tif".format(
                                                 path_m=path_current_masks, img=image[0])
-                                        contour_mask = Image.open(path_countour_mask)
-                                        contour_mask = np.array(contour_mask)
-                                        frame_cov = AgisoftFunctions.grid_coverage_calculator(coords_pic, contour_mask)
+                                        try:
+                                            contour_mask = Image.open(path_countour_mask)
+                                            contour_mask = np.array(contour_mask)
+                                            frame_cov = AgisoftFunctions.grid_coverage_calculator(coords_pic, contour_mask)
 
-                                        out = ({'img_id': img_id, 'centr_x': centr_x,
-                                                'centr_y': centr_y, 'cover': frame_cov})
-                                        frame_coverage.append(out)
+                                            out = ({'img_id': img_id, 'centr_x': centr_x,
+                                                    'centr_y': centr_y, 'cover': frame_cov})
+                                            frame_coverage.append(out)
+                                        except FileNotFoundError:
+                                            print("x")
 
                                 csv_namer = "{path_out}/{label}_{dat}.csv".format(path_out=path_output_frame_csv,
                                                                                   label=frame_label, dat=date)

@@ -1,9 +1,7 @@
 # ======================================================================================================================
 # Author: Jonas Anderegg, Flavian Tschurr
 # Project: Herbifly
-# Script use: HF segmentation of single images by classification, segmentation, referencing to world coordiantes etc.
 # Date: 05.05.2020
-# Random Forest etc. from Lukas Roth --> https://gitlab.ethz.ch/crop_phenotyping/crop_phenotyping_course
 # Last modified: 2021-11-02
 # ======================================================================================================================
 
@@ -247,8 +245,8 @@ class SegmentationCalculator:
         # (validation --> set value for 10m drone flight divide by the reference_meter of the drone flight)
         kernel_morph_multiplier = [0.010964912280701754, 0.013706140350877192]  # [4, 5]
         kernel_closing_blur_multiplier = [0.005482456140350877, 0.008223684210526315]  # [2, 3]
-        max_weed_size_multiplier = 0.4111842105263158  # 150
-        min_weed_size_multiplier = 0.05482456140350877  # 20
+        max_weed_size_multiplier = 0.8223684210526315  # 300
+        min_weed_size_multiplier = 0.08223684210526315  # 30
 
         # standardise input values using reference meter and pass clf function
         kernel_morph = [int(kernel_morph_multiplier[0] * reference_meter),
@@ -350,12 +348,12 @@ class SegmentationCalculator:
         # CLASSIFY OBJECTS AND CREATE WEED MASKS
         # ==============================================================================================================
 
-        path_predicted_image = "{path_current_j}/{pic_roi}/{pic_n}_predicted_image.tif".format(
+        path_predicted_image = "{path_current_j}/{pic_n}_predicted_image.tif".format(
             path_current_j=path_current_prediction,
             pic_roi=self.picture_roi,
             pic_n=pic_name
         )
-        path_predicted_mask = "{path_current_j}/{pic_roi}/{pic_n}_predicted_mask.tif".format(
+        path_predicted_mask = "{path_current_j}/{pic_n}_predicted_mask.tif".format(
             path_current_j=path_current_prediction,
             pic_roi=self.picture_roi,
             pic_n=pic_name
@@ -400,7 +398,7 @@ class SegmentationCalculator:
             oneImg_output_df = pd.DataFrame(oneImg_output, columns=cols)
             gridIndicator = self.gridSize * 100
             # oneImg_output_df.to_csv(f'{path_output_date_csv}/{pic_name}_coverage_{gridIndicator}.csv')
-            output_namer = "{path_output_d_csv}/{pic_n}_coverage_{gridIndi}.csv".format(
+            output_namer = "{path_output_d_csv}/{pic_n}_coverage.csv".format(
                 path_output_d_csv=path_output_date_csv, pic_n=pic_name, gridIndi=gridIndicator)
             oneImg_output_df.to_csv(output_namer)
             # csv_picName = f'{path_output_date_csv}/{pic_name}_coverage_{gridIndicator}.csv'
@@ -470,6 +468,8 @@ class SegmentationCalculator:
             dates = os.listdir(path_myfarm)
 
             for date in dates:
+
+                print(date)
 
                 if utils._check_date_name(date):
 
@@ -568,7 +568,7 @@ class SegmentationCalculator:
                             # ==========================================================================================
 
                             path_current_weed_mask = Path(
-                                os.path.join(f'{path_current_prediction}/{self.picture_roi}/{pic_name}_predicted_mask.tif'))
+                                os.path.join(f'{path_current_prediction}/{pic_name}_predicted_mask.tif'))
 
                             if not path_current_weed_mask.exists():
                                 img_clf, mask_clf = self.classify_components(
@@ -734,7 +734,7 @@ class SegmentationCalculator:
                                     else:
                                         print('>>Output already exists. Skipping grid filling.')
                             except:
-                                print(colored("Some error occurred. Skipping image", "red"))
+                                print(colored("Skipping an image", "red"))
                                 continue
 
                 except:

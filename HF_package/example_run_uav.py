@@ -11,7 +11,7 @@ import pip
 # def install_whl(path):
 #     pipmain(['install', path])
 #
-# # install_whl("T:/opencv_python-3.4.2.16-cp27-cp27m-win_amd64.whl")
+# # install_whl("T:/opencv_python-3.4.2.16-cp27-cp27m-win_amd64.whl")y
 # #
 # install_whl("C:/Users/anjonas/Downloads/Metashape-1.6.5-cp35.cp36.cp37-none-win_amd64.whl")
 #
@@ -28,7 +28,7 @@ def run(workdir, pic_format=None):
     picture_type = "10m"  # "10m" or "30m" or "50m" or "Handheld"
     picture_roi = "fullsize"  # "fullsize" or "tile"; MUST BE "" for Handheld
     features = "all"  # "subset" or "all"
-    farmers = ["Bonny"]
+    farmers = ["Scheidegger"]
     gridSize = 0.5
     agisoft_path = "O:/Hiwi/2020_Herbifly/Processed_Campaigns"
     segmentation_calculator = SegmentationCalculator(
